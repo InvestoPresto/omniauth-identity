@@ -44,7 +44,11 @@ module OmniAuth
       def registration_form
         OmniAuth::Form.build(:title => 'Register Identity') do |f|
           options[:fields].each do |field|
-            f.text_field field.to_s.capitalize, field.to_s
+            if field.match /password/
+              f.password_field field.to_s.capitalize, field.to_s
+            else
+              f.text_field field.to_s.capitalize, field.to_s
+            end
           end
         end.to_response
       end
