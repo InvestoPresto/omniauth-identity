@@ -1,15 +1,15 @@
 module OmniAuth
   module Strategies
-    # The identity strategy allows you to provide simple internal 
+    # The identity strategy allows you to provide simple internal
     # user authentication using the same process flow that you
     # use for external OmniAuth providers.
     class Identity
       include OmniAuth::Strategy
 
-      option :fields, [:name, :email]
+      option :fields, [:name, :email, :password, :password_confirmation]
       option :on_failed_registration, nil
 
-      def request_phase
+      def request_form
         OmniAuth::Form.build(
           :title => (options[:title] || "Identity Verification"),
           :url => callback_path
@@ -17,7 +17,11 @@ module OmniAuth
           f.text_field 'Login', 'auth_key'
           f.password_field 'Password', 'password'
           f.html "<p align='center'><a href='#{registration_path}'>Create an Identity</a></p>"
-        end.to_response 
+        end
+      end
+
+      def request_phase
+        request_form.to_response
       end
 
       def callback_phase
@@ -42,13 +46,11 @@ module OmniAuth
           options[:fields].each do |field|
             f.text_field field.to_s.capitalize, field.to_s
           end
-          f.password_field 'Password', 'password'
-          f.password_field 'Confirm Password', 'password_confirmation'
         end.to_response
       end
 
       def registration_phase
-        attributes = (options[:fields] + [:password, :password_confirmation]).inject({}){|h,k| h[k] = request[k.to_s]; h}
+        attributes = (options[:fields]).inject({}){|h,k| h[k] = request[k.to_s]; h}
         @identity = model.create(attributes)
         if @identity.persisted?
           env['PATH_INFO'] = callback_path
