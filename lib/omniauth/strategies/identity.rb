@@ -8,6 +8,7 @@ module OmniAuth
 
       option :fields, [:name, :email, :password, :password_confirmation]
       option :on_failed_registration, nil
+      option :custom_login_html, nil
 
       def request_form
         OmniAuth::Form.build(
@@ -17,6 +18,7 @@ module OmniAuth
           f.text_field 'Login', 'auth_key'
           f.password_field 'Password', 'password'
           f.html "<p align='center'><a href='#{registration_path}'>Create an Identity</a></p>"
+          f.html options.custom_login_html if options.custom_login_html
         end
       end
 
