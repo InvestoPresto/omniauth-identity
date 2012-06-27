@@ -60,7 +60,7 @@ module OmniAuth
         @identity = model.create(attributes)
         if @identity.persisted?
           env['PATH_INFO'] = callback_path
-          callback_phase
+          callback_call
         else
           if options[:on_failed_registration]
             self.env['omniauth.identity'] = @identity
